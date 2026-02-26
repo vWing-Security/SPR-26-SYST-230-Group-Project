@@ -1,0 +1,37 @@
+[
+  {
+    "date": "2026-01-01",
+    "distance": "18m",
+    "target_face": "40cm",
+    "weather": "Indoor",
+    "equipment_notes": "N/A",
+    "ends": [
+      [
+        9
+      ],
+      [
+        9
+      ],
+      [
+        "X"
+      ]
+    ],
+    "stats": {
+      "total_score": 28,
+      "max_possible": 30,
+      "accuracy_pct": 93.3,
+      "arrow_count": 3,
+      "average_arrow": 9.33,
+      "std_dev": 0.58,
+      "x_count": 1,
+      "x_pct": 33.3,
+      "ten_count": 1,
+      "personal_best_end": 10,
+      "end_scores": [
+        9,
+        9,
+        10
+      ]
+    }
+  }
+]
