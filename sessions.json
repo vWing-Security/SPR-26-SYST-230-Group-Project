@@ -33,5 +33,262 @@
         10
       ]
     }
+  },
+  {
+    "name": "Session 2",
+    "date": "2026-03-20 18:40",
+    "distance": "N/A",
+    "target_face": "N/A",
+    "weather": "N/A",
+    "equipment_notes": "N/A",
+    "ends": [
+      [
+        6,
+        7,
+        10,
+        8,
+        7,
+        7,
+        5,
+        4
+      ]
+    ],
+    "shot_positions": [
+      {
+        "x": -0.47580645161290325,
+        "y": -0.14919354838709678,
+        "score": 6,
+        "end": 1
+      },
+      {
+        "x": -0.012096774193548387,
+        "y": 0.3588709677419355,
+        "score": 7,
+        "end": 1
+      },
+      {
+        "x": 0.028225806451612902,
+        "y": 0.0,
+        "score": 10,
+        "end": 1
+      },
+      {
+        "x": 0.1935483870967742,
+        "y": -0.10483870967741936,
+        "score": 8,
+        "end": 1
+      },
+      {
+        "x": 0.28225806451612906,
+        "y": -0.27419354838709675,
+        "score": 7,
+        "end": 1
+      },
+      {
+        "x": 0.06451612903225806,
+        "y": -0.3387096774193548,
+        "score": 7,
+        "end": 1
+      },
+      {
+        "x": -0.4637096774193548,
+        "y": -0.2862903225806452,
+        "score": 5,
+        "end": 1
+      },
+      {
+        "x": -0.33064516129032256,
+        "y": -0.6088709677419355,
+        "score": 4,
+        "end": 1
+      }
+    ],
+    "current_end": 1,
+    "current_end_buffer": [],
+    "stats": {
+      "total_score": 54,
+      "max_possible": 80,
+      "accuracy_pct": 67.5,
+      "arrow_count": 8,
+      "average_arrow": 6.75,
+      "std_dev": 1.83,
+      "x_count": 0,
+      "x_pct": 0.0,
+      "ten_count": 1,
+      "personal_best_end": 54,
+      "end_scores": [
+        54
+      ]
+    }
+  },
+  {
+    "name": "Session 3",
+    "date": "2026-03-20 18:45",
+    "distance": "N/A",
+    "target_face": "Recurve (Full)",
+    "weather": "N/A",
+    "equipment_notes": "N/A",
+    "ends": [],
+    "shot_positions": [],
+    "current_end": 1,
+    "current_end_buffer": [],
+    "stats": {
+      "total_score": 0,
+      "max_possible": 0,
+      "accuracy_pct": 0.0,
+      "arrow_count": 0,
+      "average_arrow": 0.0,
+      "std_dev": 0.0,
+      "x_count": 0,
+      "x_pct": 0.0,
+      "ten_count": 0,
+      "personal_best_end": 0,
+      "end_scores": []
+    }
+  },
+  {
+    "name": "Session 4",
+    "date": "2026-03-20 18:46",
+    "distance": "N/A",
+    "target_face": "Compound (6-ring)",
+    "weather": "N/A",
+    "equipment_notes": "N/A",
+    "ends": [
+      [
+        10,
+        10
+      ]
+    ],
+    "shot_positions": [
+      {
+        "x": 0.016129032258064516,
+        "y": 0.024193548387096774,
+        "score": 10,
+        "end": 1
+      },
+      {
+        "x": 0.0967741935483871,
+        "y": 0.06854838709677419,
+        "score": 10,
+        "end": 1
+      }
+    ],
+    "current_end": 1,
+    "current_end_buffer": [],
+    "stats": {
+      "total_score": 20,
+      "max_possible": 20,
+      "accuracy_pct": 100.0,
+      "arrow_count": 2,
+      "average_arrow": 10.0,
+      "std_dev": 0.0,
+      "x_count": 0,
+      "x_pct": 0.0,
+      "ten_count": 2,
+      "personal_best_end": 20,
+      "end_scores": [
+        20
+      ]
+    }
+  },
+  {
+    "name": "Session 5",
+    "date": "2026-03-20 18:52",
+    "distance": "N/A",
+    "target_face": "Recurve (Full)",
+    "weather": "N/A",
+    "equipment_notes": "N/A",
+    "ends": [],
+    "shot_positions": [],
+    "current_end": 1,
+    "current_end_buffer": [],
+    "stats": {
+      "total_score": 0,
+      "max_possible": 0,
+      "accuracy_pct": 0.0,
+      "arrow_count": 0,
+      "average_arrow": 0.0,
+      "std_dev": 0.0,
+      "x_count": 0,
+      "x_pct": 0.0,
+      "ten_count": 0,
+      "personal_best_end": 0,
+      "end_scores": []
+    }
+  },
+  {
+    "name": "Session 6",
+    "date": "2026-03-20 18:52",
+    "distance": "N/A",
+    "target_face": "Compound (Inner 10)",
+    "weather": "N/A",
+    "equipment_notes": "N/A",
+    "ends": [],
+    "shot_positions": [],
+    "current_end": 1,
+    "current_end_buffer": [],
+    "stats": {
+      "total_score": 0,
+      "max_possible": 0,
+      "accuracy_pct": 0.0,
+      "arrow_count": 0,
+      "average_arrow": 0.0,
+      "std_dev": 0.0,
+      "x_count": 0,
+      "x_pct": 0.0,
+      "ten_count": 0,
+      "personal_best_end": 0,
+      "end_scores": []
+    }
+  },
+  {
+    "name": "Session 7",
+    "date": "2026-03-20 18:52",
+    "distance": "N/A",
+    "target_face": "Recurve (Full)",
+    "weather": "N/A",
+    "equipment_notes": "N/A",
+    "ends": [],
+    "shot_positions": [],
+    "current_end": 1,
+    "current_end_buffer": [],
+    "stats": {
+      "total_score": 0,
+      "max_possible": 0,
+      "accuracy_pct": 0.0,
+      "arrow_count": 0,
+      "average_arrow": 0.0,
+      "std_dev": 0.0,
+      "x_count": 0,
+      "x_pct": 0.0,
+      "ten_count": 0,
+      "personal_best_end": 0,
+      "end_scores": []
+    }
+  },
+  {
+    "name": "Session 8",
+    "date": "2026-03-20 18:52",
+    "distance": "N/A",
+    "target_face": "Compound (Inner 10)",
+    "weather": "N/A",
+    "equipment_notes": "N/A",
+    "ends": [],
+    "shot_positions": [],
+    "current_end": 1,
+    "current_end_buffer": [],
+    "stats": {
+      "total_score": 0,
+      "max_possible": 0,
+      "accuracy_pct": 0.0,
+      "arrow_count": 0,
+      "average_arrow": 0.0,
+      "std_dev": 0.0,
+      "x_count": 0,
+      "x_pct": 0.0,
+      "ten_count": 0,
+      "personal_best_end": 0,
+      "end_scores": []
+    }
   }
 ]
