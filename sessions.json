@@ -567,6 +567,16 @@
         9,
         9,
         10
+      ],
+      [
+        0,
+        0,
+        10
+      ],
+      [
+        0,
+        0,
+        10
       ]
     ],
     "shot_positions": [
@@ -623,25 +633,115 @@
         "y": -0.024883291850861203,
         "score": 10,
         "end": 3
+      },
+      {
+        "x": null,
+        "y": null,
+        "score": 0,
+        "end": 3
+      },
+      {
+        "x": null,
+        "y": null,
+        "score": 0,
+        "end": 3
+      },
+      {
+        "x": 0.03526953454489682,
+        "y": -0.0005015045135406233,
+        "score": 10,
+        "end": 3
+      },
+      {
+        "x": null,
+        "y": null,
+        "score": 0,
+        "end": 4
+      },
+      {
+        "x": null,
+        "y": null,
+        "score": 0,
+        "end": 4
+      },
+      {
+        "x": 0.03299849193568997,
+        "y": -0.04316963235385162,
+        "score": 10,
+        "end": 4
       }
     ],
-    "current_end": 3,
+    "current_end": 4,
     "current_end_buffer": [],
     "stats": {
-      "total_score": 86,
-      "max_possible": 90,
-      "accuracy_pct": 95.6,
-      "arrow_count": 9,
-      "average_arrow": 9.56,
-      "std_dev": 0.53,
+      "total_score": 106,
+      "max_possible": 150,
+      "accuracy_pct": 70.7,
+      "arrow_count": 15,
+      "average_arrow": 7.07,
+      "std_dev": 4.43,
       "x_count": 0,
       "x_pct": 0.0,
-      "ten_count": 5,
+      "ten_count": 7,
       "personal_best_end": 30,
       "end_scores": [
         30,
         28,
-        28
+        28,
+        10,
+        10
+      ]
+    }
+  },
+  {
+    "name": "Session 12",
+    "date": "2026-04-29 12:53",
+    "distance": "N/A",
+    "target_face": "Recurve (Full)",
+    "weather": "N/A",
+    "equipment_notes": "N/A",
+    "ends": [
+      [
+        10,
+        10,
+        10
+      ]
+    ],
+    "shot_positions": [
+      {
+        "x": -0.06617277338926825,
+        "y": 0.02563826755813713,
+        "score": 10,
+        "end": 1
+      },
+      {
+        "x": 0.002877077103881234,
+        "y": -0.004440368288259741,
+        "score": 10,
+        "end": 1
+      },
+      {
+        "x": -0.008631231311643702,
+        "y": -0.044545216083455526,
+        "score": 10,
+        "end": 1
+      }
+    ],
+    "current_end": 1,
+    "current_end_buffer": [],
+    "stats": {
+      "total_score": 30,
+      "max_possible": 30,
+      "accuracy_pct": 100.0,
+      "arrow_count": 3,
+      "average_arrow": 10.0,
+      "std_dev": 0.0,
+      "x_count": 0,
+      "x_pct": 0.0,
+      "ten_count": 3,
+      "personal_best_end": 30,
+      "end_scores": [
+        30
       ]
     }
   }

@@ -832,6 +832,7 @@ class ArcheryTracker:
         row2.pack(fill="x", padx=4, pady=(0, 8))
         for label, cmd, bg in [
             ("New End",   self._new_end,   COLORS["accent"]),
+            ("Miss",      self._add_miss,  "#3a3a55"),
             ("Undo",      self._undo_last, "#553300"),
             ("Clear End", self._clear_end, "#5a0000"),
         ]:
@@ -874,17 +875,25 @@ class ArcheryTracker:
         self._shot_lb.delete(0, tk.END)
         # Completed ends
         for i, end in enumerate(self.current_session.get("ends", [])):
-            scores = end
-            parts = "  ".join("X" if s == "X" else str(s) for s in scores)
-            total = sum(10 if s == "X" else s for s in scores)
+            parts = "  ".join(self._fmt_arrow(s) for s in end)
+            total = sum(10 if s == "X" else s for s in end)
             self._shot_lb.insert(tk.END, f"End {i + 1}: {parts:<20} = {total}")
         # Current end buffer (in progress)
         if self.current_end_buffer:
             end_num = self.current_session.get("current_end", 1)
-            parts = "  ".join(str(s) for s in self.current_end_buffer)
+            parts = "  ".join(self._fmt_arrow(s) for s in self.current_end_buffer)
             total = sum(self.current_end_buffer)
             self._shot_lb.insert(tk.END, f"End {end_num}: {parts:<20} = {total}  *")
         self._shot_lb.see(tk.END)
+
+    @staticmethod
+    def _fmt_arrow(score):
+        """Render an arrow score for the shot history (X / M / numeric)."""
+        if score == "X":
+            return "X"
+        if score == 0:
+            return "M"
+        return str(score)
 
     # ── Target Drawing ───────────────────────────────────────────────────────
 
@@ -1096,6 +1105,10 @@ class ArcheryTracker:
     def _redraw_shots(self):
         self.canvas.delete("shot")
         for shot in self.current_session.get("shot_positions", []):
+            # Misses have no canvas position — they're recorded via the Miss
+            # button and only show up in the shot history list.
+            if shot.get("x") is None or shot.get("y") is None:
+                continue
             x = self._cx + shot["x"] * self._radius
             y = self._cy + shot["y"] * self._radius
             self._draw_arrow(x, y, shot["score"])
@@ -1116,6 +1129,21 @@ class ArcheryTracker:
         )
         self._save_progress()
         self._update_display()
+
+    def _add_miss(self):
+        """Record a miss — score 0, no canvas position."""
+        if self.current_session is None:
+            return
+        if len(self.current_end_buffer) >= ARROWS_PER_END:
+            self._show_end_full_popup()
+            return
+        self.current_end_buffer.append(0)
+        self.current_session.setdefault("shot_positions", []).append({
+            "x": None, "y": None, "score": 0,
+            "end": self.current_session.get("current_end", 1),
+        })
+        self._update_display()
+        self._save_progress()
 
     def _undo_last(self):
         positions = self.current_session.get("shot_positions", [])
@@ -1601,6 +1629,8 @@ class SmartArcheryUI:
                 if a == "X":
                     arrow_str += f"{'X':>4}"
                     end_total += 10
+                elif a == 0:
+                    arrow_str += f"{'M':>4}"
                 else:
                     arrow_str += f"{a:>4}"
                     end_total += int(a)
