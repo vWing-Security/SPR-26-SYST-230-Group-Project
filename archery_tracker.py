@@ -21,6 +21,7 @@ from datetime import datetime
 from tkinter import ttk, messagebox
 
 DB_FILE = "sessions.json"
+ARROWS_PER_END = 3
 
 
 class SessionDatabase:
@@ -180,12 +181,15 @@ class SmartArcherySystem:
     def submitScore(self, scores):
         """Records one end of arrow scores into the current session.
 
-        :param scores: list of arrow values — integers 0-10 or 'X' for inner 10.
+        :param scores: list of 1-3 arrow values — integers 0-10 or 'X' for inner 10.
         :returns: dict with 'end_total' and 'running_total'.
-        :raises ValueError: If no active session or invalid score values.
+        :raises ValueError: If no active session, invalid scores, or > 3 arrows.
         """
         if self.current_session is None:
             raise ValueError("No active session. Call initializeSession() first.")
+
+        if len(scores) > ARROWS_PER_END:
+            raise ValueError(f"Maximum {ARROWS_PER_END} arrows per end.")
 
         for s in scores:
             if s not in self.VALID_SCORES:
@@ -443,6 +447,7 @@ class ArcheryTracker:
         self._avg_var   = tk.StringVar(value="0.0")
         self._end_var   = tk.StringVar(value="1")
         self._shot_lb   = None
+        self._end_full_popup = None
 
         # Zoom and pan state
         self._zoom = 1.0
@@ -1020,6 +1025,9 @@ class ArcheryTracker:
         score = self._score_for(x, y)
         if score == 0:
             return
+        if len(self.current_end_buffer) >= ARROWS_PER_END:
+            self._show_end_full_popup()
+            return
 
         # Store positions normalized to zoomed radius (true target coordinates)
         x_norm = (x - self._cx) / self._radius
@@ -1038,6 +1046,11 @@ class ArcheryTracker:
     def _on_hover(self, event):
         self._pan_view(event.x, event.y)
         self.canvas.delete("hover")
+        if len(self.current_end_buffer) >= ARROWS_PER_END:
+            self.canvas.create_text(event.x + 16, event.y - 14,
+                                    text="End full", font=("Helvetica", 11, "bold"),
+                                    fill="#FFA500", tags="hover", anchor="w")
+            return
         score = self._score_for(event.x, event.y)
         if score > 0:
             self.canvas.create_text(event.x + 16, event.y - 14,
@@ -1120,6 +1133,48 @@ class ArcheryTracker:
         self._draw_target()
         self._redraw_shots()
         self._update_display()
+
+    def _show_end_full_popup(self):
+        """In-app modal warning when the user clicks a 4th arrow in an end."""
+        # If a previous popup is still open, just bring it forward.
+        if (self._end_full_popup is not None
+                and self._end_full_popup.winfo_exists()):
+            self._end_full_popup.lift()
+            return
+
+        dlg = tk.Toplevel(self.root)
+        dlg.title("End Full")
+        dlg.configure(bg=COLORS["bg"])
+        dlg.resizable(False, False)
+        dlg.transient(self.root)
+
+        tk.Label(dlg, text="End Full",
+                 font=("Helvetica", 14, "bold"),
+                 bg=COLORS["bg"], fg=COLORS["highlight"]).pack(padx=28, pady=(18, 4))
+        tk.Label(dlg,
+                 text=(f"Only {ARROWS_PER_END} arrows allowed per end.\n"
+                       "Click “New End” to continue scoring."),
+                 font=("Helvetica", 10),
+                 bg=COLORS["bg"], fg=COLORS["text"],
+                 justify="center").pack(padx=28, pady=(0, 14))
+
+        self._btn(dlg, "OK", dlg.destroy,
+                  bg=COLORS["highlight"], fg="white").pack(pady=(0, 16))
+
+        dlg.bind("<Return>", lambda e: dlg.destroy())
+        dlg.bind("<Escape>", lambda e: dlg.destroy())
+
+        # Center over the main window.
+        self.root.update_idletasks()
+        dlg.update_idletasks()
+        w = dlg.winfo_reqwidth()
+        h = dlg.winfo_reqheight()
+        x = self.root.winfo_x() + (self.root.winfo_width() - w) // 2
+        y = self.root.winfo_y() + (self.root.winfo_height() - h) // 2
+        dlg.geometry(f"+{x}+{y}")
+
+        dlg.grab_set()
+        self._end_full_popup = dlg
 
     # ── Export ───────────────────────────────────────────────────────────────
 
@@ -1326,7 +1381,8 @@ class SmartArcheryUI:
 
     def displayScoringInterface(self):
         """Scoring loop — user enters arrow scores end by end."""
-        print("\n  Enter arrow scores per end (space-separated, 0-10 or X).")
+        print(f"\n  Enter up to {ARROWS_PER_END} arrow scores per end "
+              "(space-separated, 0-10 or X).")
         print("  Type 'done' when finished, 'undo' to remove last end.\n")
 
         end_num = 1

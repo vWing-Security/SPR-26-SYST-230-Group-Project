@@ -1,4 +1,8 @@
-Session_ID,Date,Distance,Target_Face,Weather,Equipment_Notes,End_Number,Arrow_1,End_Total
-0,2026-01-01,18m,40cm,Indoor,N/A,1,9,9
-0,2026-01-01,18m,40cm,Indoor,N/A,2,9,9
-0,2026-01-01,18m,40cm,Indoor,N/A,3,X,10
+Session_ID,Date,Distance,Target_Face,Weather,Equipment_Notes,End_Number,Arrow_1,Arrow_2,Arrow_3,Arrow_4,Arrow_5,Arrow_6,Arrow_7,Arrow_8,End_Total
+0,2026-01-01,18m,40cm,Indoor,N/A,1,9,,,,,,,,9
+0,2026-01-01,18m,40cm,Indoor,N/A,2,9,,,,,,,,9
+0,2026-01-01,18m,40cm,Indoor,N/A,3,X,,,,,,,,10
+1,2026-03-20 18:40,N/A,N/A,N/A,N/A,1,6,7,10,8,7,7,5,4,54
+3,2026-03-20 18:46,N/A,Compound (6-ring),N/A,N/A,1,10,10,,,,,,,20
+8,2026-04-29 12:22,20m,Compound (Inner 10),Indoor,N/A,1,10,10,9,,,,,,29
+8,2026-04-29 12:22,20m,Compound (Inner 10),Indoor,N/A,2,9,8,8,,,,,,25

@@ -274,9 +274,39 @@
     "weather": "N/A",
     "equipment_notes": "N/A",
     "ends": [],
-    "shot_positions": [],
+    "shot_positions": [
+      {
+        "x": 0.039392059553349894,
+        "y": -0.015756823821339982,
+        "score": 10,
+        "end": 1
+      },
+      {
+        "x": -0.04333126550868486,
+        "y": -0.051209677419354796,
+        "score": 10,
+        "end": 1
+      },
+      {
+        "x": -0.031513647642679846,
+        "y": 0.027574441687344936,
+        "score": 10,
+        "end": 1
+      },
+      {
+        "x": -0.031513647642679846,
+        "y": 0.027574441687344936,
+        "score": 10,
+        "end": 1
+      }
+    ],
     "current_end": 1,
-    "current_end_buffer": [],
+    "current_end_buffer": [
+      10,
+      10,
+      10,
+      10
+    ],
     "stats": {
       "total_score": 0,
       "max_possible": 0,
@@ -289,6 +319,82 @@
       "ten_count": 0,
       "personal_best_end": 0,
       "end_scores": []
+    }
+  },
+  {
+    "name": "Session 9",
+    "date": "2026-04-29 12:22",
+    "distance": "20m",
+    "target_face": "Compound (Inner 10)",
+    "weather": "Indoor",
+    "equipment_notes": "N/A",
+    "ends": [
+      [
+        10,
+        10,
+        9
+      ],
+      [
+        9,
+        8,
+        8
+      ]
+    ],
+    "shot_positions": [
+      {
+        "x": 0.03545285359801487,
+        "y": 0.01767990074441688,
+        "score": 10,
+        "end": 1
+      },
+      {
+        "x": 0.027574441687344936,
+        "y": -0.05716501240694794,
+        "score": 10,
+        "end": 1
+      },
+      {
+        "x": -0.09848014888337474,
+        "y": -0.12019230769230775,
+        "score": 9,
+        "end": 1
+      },
+      {
+        "x": -0.08734491315136476,
+        "y": 0.08862696443341603,
+        "score": 9,
+        "end": 2
+      },
+      {
+        "x": -0.3190239867659222,
+        "y": -0.019851116625310104,
+        "score": 8,
+        "end": 2
+      },
+      {
+        "x": -0.27394540942928036,
+        "y": 0.0992555831265509,
+        "score": 8,
+        "end": 2
+      }
+    ],
+    "current_end": 11,
+    "current_end_buffer": [],
+    "stats": {
+      "total_score": 54,
+      "max_possible": 60,
+      "accuracy_pct": 90.0,
+      "arrow_count": 6,
+      "average_arrow": 9.0,
+      "std_dev": 0.89,
+      "x_count": 0,
+      "x_pct": 0.0,
+      "ten_count": 2,
+      "personal_best_end": 29,
+      "end_scores": [
+        29,
+        25
+      ]
     }
   }
 ]
