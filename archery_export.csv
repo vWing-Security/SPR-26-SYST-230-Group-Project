@@ -6,3 +6,6 @@ Session_ID,Date,Distance,Target_Face,Weather,Equipment_Notes,End_Number,Arrow_1,
 3,2026-03-20 18:46,N/A,Compound (6-ring),N/A,N/A,1,10,10,,,,,,,20
 8,2026-04-29 12:22,20m,Compound (Inner 10),Indoor,N/A,1,10,10,9,,,,,,29
 8,2026-04-29 12:22,20m,Compound (Inner 10),Indoor,N/A,2,9,8,8,,,,,,25
+9,2026-04-29 12:28,N/A,Compound (Inner 10),N/A,N/A,1,10,10,9,,,,,,29
+9,2026-04-29 12:28,N/A,Compound (Inner 10),N/A,N/A,2,9,9,10,,,,,,28
+9,2026-04-29 12:28,N/A,Compound (Inner 10),N/A,N/A,3,10,10,10,,,,,,30

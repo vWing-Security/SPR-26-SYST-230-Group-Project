@@ -420,9 +420,9 @@ TARGET_FACES = {
         "x_ring_ratio": 0.5, # X-ring is inner half of the 10-ring
     },
     "Compound (Inner 10)": {
-        "min_ring": 5,       # outermost ring score
-        "rings": 5,          # 5 ring bands for scores 5-9
-        "x_ring_ratio": 0.5, # X-ring in center of 9-ring
+        "min_ring": 5,        # outermost ring score
+        "rings": 5,           # 5 ring bands for scores 5-9
+        "x_ring_ratio": 0.2875, # tight inner-ten X-ring (~57% of recurve ratio)
     },
 }
 
@@ -750,17 +750,18 @@ class ArcheryTracker:
         left = tk.Frame(body, bg=COLORS["bg"])
         left.pack(side="left", fill="both", expand=True, padx=20, pady=16)
 
-        self._canvas_size = 520
-        self.canvas = tk.Canvas(left, width=self._canvas_size, height=self._canvas_size,
-                                bg=COLORS["bg"], highlightthickness=0, cursor="crosshair")
-        self.canvas.pack()
+        self._canvas_size = 520  # initial fallback; updated on <Configure>
+        self.canvas = tk.Canvas(left, bg=COLORS["bg"],
+                                highlightthickness=0, cursor="crosshair")
         self.canvas.bind("<Button-1>", self._on_click)
         self.canvas.bind("<Motion>",   self._on_hover)
         self.canvas.bind("<Leave>",    self._on_leave)
+        self.canvas.bind("<Configure>", self._on_canvas_resize)
 
-        # Zoom controls
+        # Zoom controls — packed at the bottom so the canvas above can fill+expand
         zoom_bar = tk.Frame(left, bg=COLORS["bg"])
-        zoom_bar.pack(pady=(6, 0))
+        zoom_bar.pack(side="bottom", pady=(6, 0))
+        self.canvas.pack(side="top", fill="both", expand=True)
         self._zoom_label = tk.StringVar(value=f"{self._zoom:.1f}x")
         tk.Button(zoom_bar, text="\u2212", command=self._zoom_out, font=("Helvetica", 12, "bold"),
                   bg=COLORS["accent"], fg=COLORS["text"], relief="flat", cursor="hand2",
@@ -774,6 +775,9 @@ class ArcheryTracker:
                   bg=COLORS["accent"], fg=COLORS["text"], relief="flat", cursor="hand2",
                   padx=8, pady=4).pack(side="left", padx=8)
 
+        # Force layout so the canvas has its real size before the first draw;
+        # subsequent resizes are picked up by the <Configure> binding.
+        self.root.update_idletasks()
         self._draw_target()
         self._redraw_shots()
 
@@ -913,13 +917,25 @@ class ArcheryTracker:
         self._draw_target()
         self._redraw_shots()
 
+    def _on_canvas_resize(self, event):
+        """Redraw the target whenever the canvas changes size (e.g., maximise)."""
+        new_size = min(event.width, event.height)
+        if new_size <= 1 or new_size == self._canvas_size:
+            return
+        self._canvas_size = new_size
+        self._draw_target()
+        self._redraw_shots()
+
     def _draw_target(self):
         cs = self._canvas_size
+        # Use the live canvas dimensions so the target is centred even if the
+        # canvas is wider/taller than `cs` (the smaller side drives the radius).
+        cw = self.canvas.winfo_width() or cs
+        ch = self.canvas.winfo_height() or cs
         self._base_radius = cs // 2 - 12
         self._radius = self._base_radius * self._zoom
-        # Target center on canvas, shifted by pan offset
-        cx = cs // 2 + self._pan_x
-        cy = cs // 2 + self._pan_y
+        cx = cw // 2 + self._pan_x
+        cy = ch // 2 + self._pan_y
         self._cx = cx
         self._cy = cy
 
@@ -997,13 +1013,14 @@ class ArcheryTracker:
         if self._zoom <= 1.0:
             return
 
-        cc = self._canvas_size / 2
+        cw = (self.canvas.winfo_width() or self._canvas_size) / 2
+        ch = (self.canvas.winfo_height() or self._canvas_size) / 2
         # How far the target extends beyond the canvas at this zoom
         max_pan = self._base_radius * (self._zoom - 1)
 
         # Cursor position as fraction of canvas (-1 to 1)
-        frac_x = max(-1.0, min(1.0, (mx - cc) / cc)) if cc else 0
-        frac_y = max(-1.0, min(1.0, (my - cc) / cc)) if cc else 0
+        frac_x = max(-1.0, min(1.0, (mx - cw) / cw)) if cw else 0
+        frac_y = max(-1.0, min(1.0, (my - ch) / ch)) if ch else 0
 
         # Desired pan: shift target opposite to cursor direction
         new_pan_x = -frac_x * max_pan
@@ -1086,9 +1103,11 @@ class ArcheryTracker:
     # ── End Controls ─────────────────────────────────────────────────────────
 
     def _new_end(self):
-        if self.current_end_buffer:
-            self.current_session["ends"].append(list(self.current_end_buffer))
-            self.current_end_buffer = []
+        # Don't advance through empty ends — require at least one arrow first.
+        if not self.current_end_buffer:
+            return
+        self.current_session["ends"].append(list(self.current_end_buffer))
+        self.current_end_buffer = []
         self.current_session["current_end"] = (
             self.current_session.get("current_end", 1) + 1
         )
