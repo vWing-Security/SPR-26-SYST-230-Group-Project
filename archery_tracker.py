@@ -18,7 +18,7 @@ import math
 import sys
 import tkinter as tk
 from datetime import datetime
-from tkinter import ttk, messagebox
+from tkinter import messagebox, ttk
 
 DB_FILE = "sessions.json"
 ARROWS_PER_END = 3
@@ -92,13 +92,23 @@ class SessionDatabase:
         try:
             with open(filepath, "w", newline="") as f:
                 writer = csv.writer(f)
-                max_arrows = max(
-                    (len(end) for s in self.sessions for end in s.get("ends", [])),
-                    default=0,
-                ) or 6
+                max_arrows = (
+                    max(
+                        (len(end) for s in self.sessions for end in s.get("ends", [])),
+                        default=0,
+                    )
+                    or 6
+                )
 
-                header = ["Session_ID", "Date", "Distance", "Target_Face",
-                          "Weather", "Equipment_Notes", "End_Number"]
+                header = [
+                    "Session_ID",
+                    "Date",
+                    "Distance",
+                    "Target_Face",
+                    "Weather",
+                    "Equipment_Notes",
+                    "End_Number",
+                ]
                 header += [f"Arrow_{i + 1}" for i in range(max_arrows)]
                 header += ["End_Total"]
                 writer.writerow(header)
@@ -381,13 +391,14 @@ class SmartArcherySystem:
             "session_averages": session_averages,
         }
 
+
 COLORS = {
-    "bg":        "#1a1a2e",
-    "panel":     "#16213e",
-    "accent":    "#0f3460",
+    "bg": "#1a1a2e",
+    "panel": "#16213e",
+    "accent": "#0f3460",
     "highlight": "#e94560",
-    "text":      "#eaeaea",
-    "subtext":   "#a0a0b0",
+    "text": "#eaeaea",
+    "subtext": "#a0a0b0",
 }
 
 # Index 0 = ring 1 (outermost), index 9 = ring 10 (bullseye)
@@ -405,24 +416,29 @@ RING_COLORS = [
 ]
 
 RING_TEXT_COLORS = [
-    "#000000", "#000000",
-    "#FFFFFF", "#FFFFFF",
-    "#FFFFFF", "#FFFFFF",
-    "#FFFFFF", "#FFFFFF",
-    "#000000", "#000000",
+    "#000000",
+    "#000000",
+    "#FFFFFF",
+    "#FFFFFF",
+    "#FFFFFF",
+    "#FFFFFF",
+    "#FFFFFF",
+    "#FFFFFF",
+    "#000000",
+    "#000000",
 ]
 
 # Target face types
 TARGET_FACES = {
     "Recurve (Full)": {
-        "min_ring": 1,       # outermost ring score
-        "rings": 10,         # number of ring bands drawn
-        "x_ring_ratio": 0.5, # X-ring is inner half of the 10-ring
+        "min_ring": 1,  # outermost ring score
+        "rings": 10,  # number of ring bands drawn
+        "x_ring_ratio": 0.5,  # X-ring is inner half of the 10-ring
     },
     "Compound (Inner 10)": {
-        "min_ring": 5,        # outermost ring score
-        "rings": 5,           # 5 ring bands for scores 5-9
-        "x_ring_ratio": 0.2875, # tight inner-ten X-ring (~57% of recurve ratio)
+        "min_ring": 5,  # outermost ring score
+        "rings": 5,  # 5 ring bands for scores 5-9
+        "x_ring_ratio": 0.2875,  # tight inner-ten X-ring (~57% of recurve ratio)
     },
 }
 
@@ -437,16 +453,16 @@ class ArcheryTracker:
         self.root.minsize(800, 600)
 
         self.system = SmartArcherySystem()
-        self.current_session = None       # Active session dict
-        self._session_idx = None          # Index in db.sessions
-        self.current_end_buffer = []      # Arrows for the current (incomplete) end
+        self.current_session = None  # Active session dict
+        self._session_idx = None  # Index in db.sessions
+        self.current_end_buffer = []  # Arrows for the current (incomplete) end
 
         # Sidebar display variables (created here so they exist before _build_sidebar)
         self._score_var = tk.StringVar(value="0")
         self._shots_var = tk.StringVar(value="0")
-        self._avg_var   = tk.StringVar(value="0.0")
-        self._end_var   = tk.StringVar(value="1")
-        self._shot_lb   = None
+        self._avg_var = tk.StringVar(value="0.0")
+        self._end_var = tk.StringVar(value="1")
+        self._shot_lb = None
         self._end_full_popup = None
 
         # Zoom and pan state
@@ -486,10 +502,21 @@ class ArcheryTracker:
     def _btn(self, parent, text, cmd, bg=None, fg=None, **kw):
         bg = bg or COLORS["accent"]
         fg = fg or COLORS["text"]
-        b = tk.Button(parent, text=text, command=cmd, font=("Helvetica", 12),
-                      bg=bg, fg=fg, activebackground=COLORS["highlight"],
-                      activeforeground="white", relief="flat", cursor="hand2",
-                      padx=16, pady=8, **kw)
+        b = tk.Button(
+            parent,
+            text=text,
+            command=cmd,
+            font=("Helvetica", 12),
+            bg=bg,
+            fg=fg,
+            activebackground=COLORS["highlight"],
+            activeforeground="white",
+            relief="flat",
+            cursor="hand2",
+            padx=16,
+            pady=8,
+            **kw,
+        )
         b.bind("<Enter>", lambda e: b.configure(bg=COLORS["highlight"]))
         b.bind("<Leave>", lambda e: b.configure(bg=bg))
         return b
@@ -508,8 +535,9 @@ class ArcheryTracker:
         count = self._shot_count()
         if count == 0:
             return 0.0
-        total = (self.current_session.get("stats", {}).get("total_score", 0)
-                 + sum(self.current_end_buffer))
+        total = self.current_session.get("stats", {}).get("total_score", 0) + sum(
+            self.current_end_buffer
+        )
         return total / count
 
     # ── Main Menu ────────────────────────────────────────────────────────────
@@ -522,8 +550,13 @@ class ArcheryTracker:
         hdr = tk.Frame(self.root, bg=COLORS["panel"], height=80)
         hdr.pack(fill="x")
         hdr.pack_propagate(False)
-        tk.Label(hdr, text="Archery Tracker", font=("Helvetica", 26, "bold"),
-                 bg=COLORS["panel"], fg=COLORS["highlight"]).pack(pady=22)
+        tk.Label(
+            hdr,
+            text="Archery Tracker",
+            font=("Helvetica", 26, "bold"),
+            bg=COLORS["panel"],
+            fg=COLORS["highlight"],
+        ).pack(pady=22)
 
         body = tk.Frame(self.root, bg=COLORS["bg"])
         body.pack(fill="both", expand=True, padx=50, pady=30)
@@ -531,23 +564,30 @@ class ArcheryTracker:
         # Menu buttons
         btns = tk.Frame(body, bg=COLORS["bg"])
         btns.pack()
-        for i, (label, cmd) in enumerate([
-            ("New Session",      self._new_session_dialog),
-            ("Resume Session",   self._open_session_list),
-            ("Statistics",       self.show_stats),
-            ("Export CSV",       self._export_csv),
-        ]):
+        for i, (label, cmd) in enumerate(
+            [
+                ("New Session", self._new_session_dialog),
+                ("Resume Session", self._open_session_list),
+                ("Statistics", self.show_stats),
+                ("Export CSV", self._export_csv),
+            ]
+        ):
             self._btn(btns, label, cmd, width=22).grid(row=i, column=0, pady=7)
 
-        self._btn(btns, "Quit", self.root.quit,
-                  bg="#5a0000", fg=COLORS["text"], width=22).grid(
-                      row=len(btns.winfo_children()), column=0, pady=7)
+        self._btn(
+            btns, "Quit", self.root.quit, bg="#5a0000", fg=COLORS["text"], width=22
+        ).grid(row=len(btns.winfo_children()), column=0, pady=7)
 
         # Recent sessions
         sessions = self.system.db.sessions
         if sessions:
-            tk.Label(body, text="Recent Sessions", font=("Helvetica", 12, "bold"),
-                     bg=COLORS["bg"], fg=COLORS["subtext"]).pack(pady=(28, 6))
+            tk.Label(
+                body,
+                text="Recent Sessions",
+                font=("Helvetica", 12, "bold"),
+                bg=COLORS["bg"],
+                fg=COLORS["subtext"],
+            ).pack(pady=(28, 6))
 
             for idx in range(len(sessions) - 1, max(len(sessions) - 6, -1), -1):
                 session = sessions[idx]
@@ -567,21 +607,32 @@ class ArcheryTracker:
                 if meta:
                     label += f"    [{meta}]"
 
-                lbl = tk.Label(row, text=label, font=("Helvetica", 10),
-                               bg=COLORS["panel"], fg=COLORS["text"], anchor="w")
+                lbl = tk.Label(
+                    row,
+                    text=label,
+                    font=("Helvetica", 10),
+                    bg=COLORS["panel"],
+                    fg=COLORS["text"],
+                    anchor="w",
+                )
                 lbl.pack(fill="x", padx=8, pady=7)
 
                 for widget in (row, lbl):
-                    widget.bind("<Button-1>",
-                                lambda e, i=idx: self._open_session(i))
-                    widget.bind("<Enter>",
-                                lambda e, r=row, lb=lbl: [
-                                    r.configure(bg=COLORS["accent"]),
-                                    lb.configure(bg=COLORS["accent"])])
-                    widget.bind("<Leave>",
-                                lambda e, r=row, lb=lbl: [
-                                    r.configure(bg=COLORS["panel"]),
-                                    lb.configure(bg=COLORS["panel"])])
+                    widget.bind("<Button-1>", lambda e, i=idx: self._open_session(i))
+                    widget.bind(
+                        "<Enter>",
+                        lambda e, r=row, lb=lbl: [
+                            r.configure(bg=COLORS["accent"]),
+                            lb.configure(bg=COLORS["accent"]),
+                        ],
+                    )
+                    widget.bind(
+                        "<Leave>",
+                        lambda e, r=row, lb=lbl: [
+                            r.configure(bg=COLORS["panel"]),
+                            lb.configure(bg=COLORS["panel"]),
+                        ],
+                    )
 
     # ── New Session Dialog ───────────────────────────────────────────────────
 
@@ -592,8 +643,13 @@ class ArcheryTracker:
         dlg.configure(bg=COLORS["bg"])
         dlg.grab_set()
 
-        tk.Label(dlg, text="New Session", font=("Helvetica", 15, "bold"),
-                 bg=COLORS["bg"], fg=COLORS["highlight"]).pack(pady=14)
+        tk.Label(
+            dlg,
+            text="New Session",
+            font=("Helvetica", 15, "bold"),
+            bg=COLORS["bg"],
+            fg=COLORS["highlight"],
+        ).pack(pady=14)
 
         entries = {}
         session_count = len(self.system.db.sessions)
@@ -606,11 +662,23 @@ class ArcheryTracker:
         for label, default in text_fields:
             f = tk.Frame(dlg, bg=COLORS["bg"])
             f.pack(fill="x", padx=30, pady=3)
-            tk.Label(f, text=label, font=("Helvetica", 10), bg=COLORS["bg"],
-                     fg=COLORS["subtext"], anchor="w").pack(fill="x")
-            e = tk.Entry(f, font=("Helvetica", 11), bg=COLORS["panel"],
-                         fg=COLORS["text"], insertbackground=COLORS["text"],
-                         relief="flat", bd=4)
+            tk.Label(
+                f,
+                text=label,
+                font=("Helvetica", 10),
+                bg=COLORS["bg"],
+                fg=COLORS["subtext"],
+                anchor="w",
+            ).pack(fill="x")
+            e = tk.Entry(
+                f,
+                font=("Helvetica", 11),
+                bg=COLORS["panel"],
+                fg=COLORS["text"],
+                insertbackground=COLORS["text"],
+                relief="flat",
+                bd=4,
+            )
             e.insert(0, default)
             e.pack(fill="x")
             entries[label] = e
@@ -618,12 +686,22 @@ class ArcheryTracker:
         # Target face dropdown
         f = tk.Frame(dlg, bg=COLORS["bg"])
         f.pack(fill="x", padx=30, pady=3)
-        tk.Label(f, text="Target Face", font=("Helvetica", 10), bg=COLORS["bg"],
-                 fg=COLORS["subtext"], anchor="w").pack(fill="x")
+        tk.Label(
+            f,
+            text="Target Face",
+            font=("Helvetica", 10),
+            bg=COLORS["bg"],
+            fg=COLORS["subtext"],
+            anchor="w",
+        ).pack(fill="x")
         face_var = tk.StringVar(value=list(TARGET_FACES.keys())[0])
-        face_menu = ttk.Combobox(f, textvariable=face_var,
-                                 values=list(TARGET_FACES.keys()),
-                                 font=("Helvetica", 11), state="readonly")
+        face_menu = ttk.Combobox(
+            f,
+            textvariable=face_var,
+            values=list(TARGET_FACES.keys()),
+            font=("Helvetica", 11),
+            state="readonly",
+        )
         face_menu.pack(fill="x")
 
         def start():
@@ -652,8 +730,9 @@ class ArcheryTracker:
             dlg.destroy()
             self.show_target_screen()
 
-        self._btn(dlg, "Start Session", start,
-                  bg=COLORS["highlight"], fg="white").pack(pady=14)
+        self._btn(dlg, "Start Session", start, bg=COLORS["highlight"], fg="white").pack(
+            pady=14
+        )
         entries["Session Name"].focus_set()
         dlg.bind("<Return>", lambda e: start())
 
@@ -671,18 +750,30 @@ class ArcheryTracker:
         dlg.configure(bg=COLORS["bg"])
         dlg.grab_set()
 
-        tk.Label(dlg, text="Select a Session", font=("Helvetica", 13, "bold"),
-                 bg=COLORS["bg"], fg=COLORS["highlight"]).pack(pady=10)
+        tk.Label(
+            dlg,
+            text="Select a Session",
+            font=("Helvetica", 13, "bold"),
+            bg=COLORS["bg"],
+            fg=COLORS["highlight"],
+        ).pack(pady=10)
 
         frm = tk.Frame(dlg, bg=COLORS["bg"])
         frm.pack(fill="both", expand=True, padx=16, pady=6)
 
         sb = tk.Scrollbar(frm)
         sb.pack(side="right", fill="y")
-        lb = tk.Listbox(frm, yscrollcommand=sb.set, font=("Helvetica", 10),
-                        bg=COLORS["panel"], fg=COLORS["text"],
-                        selectbackground=COLORS["highlight"], relief="flat",
-                        bd=0, activestyle="none")
+        lb = tk.Listbox(
+            frm,
+            yscrollcommand=sb.set,
+            font=("Helvetica", 10),
+            bg=COLORS["panel"],
+            fg=COLORS["text"],
+            selectbackground=COLORS["highlight"],
+            relief="flat",
+            bd=0,
+            activestyle="none",
+        )
         lb.pack(fill="both", expand=True)
         sb.config(command=lb.yview)
 
@@ -729,8 +820,13 @@ class ArcheryTracker:
         topbar.pack(fill="x")
         topbar.pack_propagate(False)
 
-        self._btn(topbar, "\u2190 Menu", self._back_to_menu,
-                  bg=COLORS["panel"], fg=COLORS["subtext"]).pack(side="left", padx=8, pady=6)
+        self._btn(
+            topbar,
+            "\u2190 Menu",
+            self._back_to_menu,
+            bg=COLORS["panel"],
+            fg=COLORS["subtext"],
+        ).pack(side="left", padx=8, pady=6)
 
         name = session.get("name", "Session")
         dist = session.get("distance", "")
@@ -739,8 +835,13 @@ class ArcheryTracker:
         meta = f"{dist}  {equip}".strip()
         if meta and meta != "N/A  N/A":
             title += f"   [{meta}]"
-        tk.Label(topbar, text=title, font=("Helvetica", 12, "bold"),
-                 bg=COLORS["panel"], fg=COLORS["text"]).pack(side="left", padx=6)
+        tk.Label(
+            topbar,
+            text=title,
+            font=("Helvetica", 12, "bold"),
+            bg=COLORS["panel"],
+            fg=COLORS["text"],
+        ).pack(side="left", padx=6)
 
         # Main body
         body = tk.Frame(self.root, bg=COLORS["bg"])
@@ -751,11 +852,12 @@ class ArcheryTracker:
         left.pack(side="left", fill="both", expand=True, padx=20, pady=16)
 
         self._canvas_size = 520  # initial fallback; updated on <Configure>
-        self.canvas = tk.Canvas(left, bg=COLORS["bg"],
-                                highlightthickness=0, cursor="crosshair")
+        self.canvas = tk.Canvas(
+            left, bg=COLORS["bg"], highlightthickness=0, cursor="crosshair"
+        )
         self.canvas.bind("<Button-1>", self._on_click)
-        self.canvas.bind("<Motion>",   self._on_hover)
-        self.canvas.bind("<Leave>",    self._on_leave)
+        self.canvas.bind("<Motion>", self._on_hover)
+        self.canvas.bind("<Leave>", self._on_leave)
         self.canvas.bind("<Configure>", self._on_canvas_resize)
 
         # Zoom controls — packed at the bottom so the canvas above can fill+expand
@@ -763,17 +865,52 @@ class ArcheryTracker:
         zoom_bar.pack(side="bottom", pady=(6, 0))
         self.canvas.pack(side="top", fill="both", expand=True)
         self._zoom_label = tk.StringVar(value=f"{self._zoom:.1f}x")
-        tk.Button(zoom_bar, text="\u2212", command=self._zoom_out, font=("Helvetica", 12, "bold"),
-                  bg=COLORS["accent"], fg=COLORS["text"], relief="flat", cursor="hand2",
-                  width=3, padx=4, pady=2).pack(side="left", padx=4)
-        tk.Label(zoom_bar, textvariable=self._zoom_label, font=("Helvetica", 11),
-                 bg=COLORS["bg"], fg=COLORS["subtext"], width=5).pack(side="left")
-        tk.Button(zoom_bar, text="+", command=self._zoom_in, font=("Helvetica", 12, "bold"),
-                  bg=COLORS["accent"], fg=COLORS["text"], relief="flat", cursor="hand2",
-                  width=3, padx=4, pady=2).pack(side="left", padx=4)
-        tk.Button(zoom_bar, text="Reset", command=self._zoom_reset, font=("Helvetica", 9),
-                  bg=COLORS["accent"], fg=COLORS["text"], relief="flat", cursor="hand2",
-                  padx=8, pady=4).pack(side="left", padx=8)
+        tk.Button(
+            zoom_bar,
+            text="\u2212",
+            command=self._zoom_out,
+            font=("Helvetica", 12, "bold"),
+            bg=COLORS["accent"],
+            fg=COLORS["text"],
+            relief="flat",
+            cursor="hand2",
+            width=3,
+            padx=4,
+            pady=2,
+        ).pack(side="left", padx=4)
+        tk.Label(
+            zoom_bar,
+            textvariable=self._zoom_label,
+            font=("Helvetica", 11),
+            bg=COLORS["bg"],
+            fg=COLORS["subtext"],
+            width=5,
+        ).pack(side="left")
+        tk.Button(
+            zoom_bar,
+            text="+",
+            command=self._zoom_in,
+            font=("Helvetica", 12, "bold"),
+            bg=COLORS["accent"],
+            fg=COLORS["text"],
+            relief="flat",
+            cursor="hand2",
+            width=3,
+            padx=4,
+            pady=2,
+        ).pack(side="left", padx=4)
+        tk.Button(
+            zoom_bar,
+            text="Reset",
+            command=self._zoom_reset,
+            font=("Helvetica", 9),
+            bg=COLORS["accent"],
+            fg=COLORS["text"],
+            relief="flat",
+            cursor="hand2",
+            padx=8,
+            pady=4,
+        ).pack(side="left", padx=8)
 
         # Force layout so the canvas has its real size before the first draw;
         # subsequent resizes are picked up by the <Configure> binding.
@@ -804,56 +941,106 @@ class ArcheryTracker:
         card = tk.Frame(parent, bg=COLORS["accent"])
         card.pack(fill="x", padx=10, pady=(14, 6))
 
-        tk.Label(card, text="TOTAL SCORE", font=("Helvetica", 9),
-                 bg=COLORS["accent"], fg=COLORS["subtext"]).pack(pady=(10, 0))
+        tk.Label(
+            card,
+            text="TOTAL SCORE",
+            font=("Helvetica", 9),
+            bg=COLORS["accent"],
+            fg=COLORS["subtext"],
+        ).pack(pady=(10, 0))
         self._score_var.set(str(self._total_score()))
-        tk.Label(card, textvariable=self._score_var, font=("Helvetica", 40, "bold"),
-                 bg=COLORS["accent"], fg=COLORS["highlight"]).pack()
+        tk.Label(
+            card,
+            textvariable=self._score_var,
+            font=("Helvetica", 40, "bold"),
+            bg=COLORS["accent"],
+            fg=COLORS["highlight"],
+        ).pack()
 
         row = tk.Frame(card, bg=COLORS["accent"])
         row.pack(pady=(0, 12))
         self._refresh_vars()
 
-        for var, lbl in [(self._shots_var, "Shots"), (self._avg_var, "Avg"), (self._end_var, "End #")]:
+        for var, lbl in [
+            (self._shots_var, "Shots"),
+            (self._avg_var, "Avg"),
+            (self._end_var, "End #"),
+        ]:
             col = tk.Frame(row, bg=COLORS["accent"])
             col.pack(side="left", padx=12)
-            tk.Label(col, textvariable=var, font=("Helvetica", 17, "bold"),
-                     bg=COLORS["accent"], fg=COLORS["text"]).pack()
-            tk.Label(col, text=lbl, font=("Helvetica", 8),
-                     bg=COLORS["accent"], fg=COLORS["subtext"]).pack()
+            tk.Label(
+                col,
+                textvariable=var,
+                font=("Helvetica", 17, "bold"),
+                bg=COLORS["accent"],
+                fg=COLORS["text"],
+            ).pack()
+            tk.Label(
+                col,
+                text=lbl,
+                font=("Helvetica", 8),
+                bg=COLORS["accent"],
+                fg=COLORS["subtext"],
+            ).pack()
 
         # Controls
         ctrl = tk.Frame(parent, bg=COLORS["panel"])
         ctrl.pack(fill="x", padx=10, pady=4)
-        tk.Label(ctrl, text="Controls", font=("Helvetica", 9, "bold"),
-                 bg=COLORS["panel"], fg=COLORS["subtext"]).pack(anchor="w", padx=4, pady=(8, 3))
+        tk.Label(
+            ctrl,
+            text="Controls",
+            font=("Helvetica", 9, "bold"),
+            bg=COLORS["panel"],
+            fg=COLORS["subtext"],
+        ).pack(anchor="w", padx=4, pady=(8, 3))
 
         row2 = tk.Frame(ctrl, bg=COLORS["panel"])
         row2.pack(fill="x", padx=4, pady=(0, 8))
         for label, cmd, bg in [
-            ("New End",   self._new_end,   COLORS["accent"]),
-            ("Miss",      self._add_miss,  "#3a3a55"),
-            ("Undo",      self._undo_last, "#553300"),
-            ("Clear End", self._clear_end, "#5a0000"),
+            ("New End", self._new_end, COLORS["accent"]),
+            ("Miss", self._add_miss, "#3a3a55"),
+            ("Undo", self._undo_last, "#553300"),
+            ("Clear", self._clear_end, "#5a0000"),
         ]:
-            b = tk.Button(row2, text=label, command=cmd, font=("Helvetica", 9),
-                          bg=bg, fg=COLORS["text"], relief="flat", cursor="hand2",
-                          padx=8, pady=5)
+            b = tk.Button(
+                row2,
+                text=label,
+                command=cmd,
+                font=("Helvetica", 9),
+                bg=bg,
+                fg=COLORS["text"],
+                relief="flat",
+                cursor="hand2",
+                padx=8,
+                pady=5,
+            )
             b.pack(side="left", padx=2)
 
         # Shot list
-        tk.Label(parent, text="Shot History", font=("Helvetica", 10, "bold"),
-                 bg=COLORS["panel"], fg=COLORS["subtext"]).pack(anchor="w", padx=14, pady=(10, 3))
+        tk.Label(
+            parent,
+            text="Shot History",
+            font=("Helvetica", 10, "bold"),
+            bg=COLORS["panel"],
+            fg=COLORS["subtext"],
+        ).pack(anchor="w", padx=14, pady=(10, 3))
 
         lf = tk.Frame(parent, bg=COLORS["panel"])
         lf.pack(fill="both", expand=True, padx=10, pady=(0, 10))
 
         sb = tk.Scrollbar(lf)
         sb.pack(side="right", fill="y")
-        self._shot_lb = tk.Listbox(lf, yscrollcommand=sb.set, font=("Courier", 10),
-                                    bg=COLORS["bg"], fg=COLORS["text"],
-                                    selectbackground=COLORS["accent"],
-                                    relief="flat", bd=0, activestyle="none")
+        self._shot_lb = tk.Listbox(
+            lf,
+            yscrollcommand=sb.set,
+            font=("Courier", 10),
+            bg=COLORS["bg"],
+            fg=COLORS["text"],
+            selectbackground=COLORS["accent"],
+            relief="flat",
+            bd=0,
+            activestyle="none",
+        )
         self._shot_lb.pack(fill="both", expand=True)
         sb.config(command=self._shot_lb.yview)
 
@@ -878,8 +1065,9 @@ class ArcheryTracker:
             parts = "  ".join(self._fmt_arrow(s) for s in end)
             total = sum(10 if s == "X" else s for s in end)
             self._shot_lb.insert(tk.END, f"End {i + 1}: {parts:<20} = {total}")
-        # Current end buffer (in progress)
-        if self.current_end_buffer:
+        # Current end (in progress) — always shown when a session is active
+        # so a freshly started end appears immediately after "New End".
+        if self.current_session is not None:
             end_num = self.current_session.get("current_end", 1)
             parts = "  ".join(self._fmt_arrow(s) for s in self.current_end_buffer)
             total = sum(self.current_end_buffer)
@@ -961,10 +1149,16 @@ class ArcheryTracker:
             score = min_ring + num_rings - i
             r = self._radius * i / num_rings
             color_idx = min(score - 1, 9)
-            self.canvas.create_oval(cx - r, cy - r, cx + r, cy + r,
-                                    fill=RING_COLORS[color_idx],
-                                    outline="#444444", width=1,
-                                    tags="target")
+            self.canvas.create_oval(
+                cx - r,
+                cy - r,
+                cx + r,
+                cy + r,
+                fill=RING_COLORS[color_idx],
+                outline="#444444",
+                width=1,
+                tags="target",
+            )
 
         # Ring score labels
         for i in range(1, num_rings + 1):
@@ -973,24 +1167,44 @@ class ArcheryTracker:
             r_inner = self._radius * (i - 1) / num_rings
             mid_r = (r_outer + r_inner) / 2 if i > 1 else r_outer * 0.5
             color_idx = min(score - 1, 9)
-            self.canvas.create_text(cx + mid_r, cy, text=str(score),
-                                    font=("Helvetica", 7, "bold"),
-                                    fill=RING_TEXT_COLORS[color_idx],
-                                    tags="target")
+            self.canvas.create_text(
+                cx + mid_r,
+                cy,
+                text=str(score),
+                font=("Helvetica", 7, "bold"),
+                fill=RING_TEXT_COLORS[color_idx],
+                tags="target",
+            )
 
         # X-ring: small circle in center of the innermost ring band
         inner_ring_r = self._radius / num_rings
         xr = inner_ring_r * x_ratio
-        self.canvas.create_oval(cx - xr, cy - xr, cx + xr, cy + xr,
-                                fill=RING_COLORS[9], outline="#111111", width=1,
-                                tags="target")
-        self.canvas.create_text(cx, cy, text="X",
-                                font=("Helvetica", 7, "bold"),
-                                fill="#000000", tags="target")
+        self.canvas.create_oval(
+            cx - xr,
+            cy - xr,
+            cx + xr,
+            cy + xr,
+            fill=RING_COLORS[9],
+            outline="#111111",
+            width=1,
+            tags="target",
+        )
+        self.canvas.create_text(
+            cx,
+            cy,
+            text="X",
+            font=("Helvetica", 7, "bold"),
+            fill="#000000",
+            tags="target",
+        )
 
         # Center crosshair
-        self.canvas.create_line(cx - 5, cy, cx + 5, cy, fill="#666666", width=1, tags="target")
-        self.canvas.create_line(cx, cy - 5, cx, cy + 5, fill="#666666", width=1, tags="target")
+        self.canvas.create_line(
+            cx - 5, cy, cx + 5, cy, fill="#666666", width=1, tags="target"
+        )
+        self.canvas.create_line(
+            cx, cy - 5, cx, cy + 5, fill="#666666", width=1, tags="target"
+        )
 
     def _score_for(self, x, y):
         dist = math.hypot(x - self._cx, y - self._cy)
@@ -1060,10 +1274,14 @@ class ArcheryTracker:
         y_norm = (y - self._cy) / self._radius
 
         self.current_end_buffer.append(score)
-        self.current_session.setdefault("shot_positions", []).append({
-            "x": x_norm, "y": y_norm, "score": score,
-            "end": self.current_session.get("current_end", 1),
-        })
+        self.current_session.setdefault("shot_positions", []).append(
+            {
+                "x": x_norm,
+                "y": y_norm,
+                "score": score,
+                "end": self.current_session.get("current_end", 1),
+            }
+        )
 
         self._draw_arrow(x, y, score)
         self._update_display()
@@ -1073,15 +1291,27 @@ class ArcheryTracker:
         self._pan_view(event.x, event.y)
         self.canvas.delete("hover")
         if len(self.current_end_buffer) >= ARROWS_PER_END:
-            self.canvas.create_text(event.x + 16, event.y - 14,
-                                    text="End full", font=("Helvetica", 11, "bold"),
-                                    fill="#FFA500", tags="hover", anchor="w")
+            self.canvas.create_text(
+                event.x + 16,
+                event.y - 14,
+                text="End full",
+                font=("Helvetica", 11, "bold"),
+                fill="#FFA500",
+                tags="hover",
+                anchor="w",
+            )
             return
         score = self._score_for(event.x, event.y)
         if score > 0:
-            self.canvas.create_text(event.x + 16, event.y - 14,
-                                    text=str(score), font=("Helvetica", 14, "bold"),
-                                    fill="white", tags="hover", anchor="w")
+            self.canvas.create_text(
+                event.x + 16,
+                event.y - 14,
+                text=str(score),
+                font=("Helvetica", 14, "bold"),
+                fill="white",
+                tags="hover",
+                anchor="w",
+            )
 
     def _on_leave(self, event):
         self.canvas.delete("hover")
@@ -1097,10 +1327,22 @@ class ArcheryTracker:
             dot_color = "#CCCCCC"
 
         r = 6
-        self.canvas.create_oval(x - r, y - r, x + r, y + r,
-                                fill=dot_color, outline="#111111", width=2, tags="shot")
-        self.canvas.create_line(x, y - r, x, y + r, fill="#111111", width=1, tags="shot")
-        self.canvas.create_line(x - r, y, x + r, y, fill="#111111", width=1, tags="shot")
+        self.canvas.create_oval(
+            x - r,
+            y - r,
+            x + r,
+            y + r,
+            fill=dot_color,
+            outline="#111111",
+            width=2,
+            tags="shot",
+        )
+        self.canvas.create_line(
+            x, y - r, x, y + r, fill="#111111", width=1, tags="shot"
+        )
+        self.canvas.create_line(
+            x - r, y, x + r, y, fill="#111111", width=1, tags="shot"
+        )
 
     def _redraw_shots(self):
         self.canvas.delete("shot")
@@ -1138,10 +1380,14 @@ class ArcheryTracker:
             self._show_end_full_popup()
             return
         self.current_end_buffer.append(0)
-        self.current_session.setdefault("shot_positions", []).append({
-            "x": None, "y": None, "score": 0,
-            "end": self.current_session.get("current_end", 1),
-        })
+        self.current_session.setdefault("shot_positions", []).append(
+            {
+                "x": None,
+                "y": None,
+                "score": 0,
+                "end": self.current_session.get("current_end", 1),
+            }
+        )
         self._update_display()
         self._save_progress()
 
@@ -1184,8 +1430,7 @@ class ArcheryTracker:
     def _show_end_full_popup(self):
         """In-app modal warning when the user clicks a 4th arrow in an end."""
         # If a previous popup is still open, just bring it forward.
-        if (self._end_full_popup is not None
-                and self._end_full_popup.winfo_exists()):
+        if self._end_full_popup is not None and self._end_full_popup.winfo_exists():
             self._end_full_popup.lift()
             return
 
@@ -1195,18 +1440,28 @@ class ArcheryTracker:
         dlg.resizable(False, False)
         dlg.transient(self.root)
 
-        tk.Label(dlg, text="End Full",
-                 font=("Helvetica", 14, "bold"),
-                 bg=COLORS["bg"], fg=COLORS["highlight"]).pack(padx=28, pady=(18, 4))
-        tk.Label(dlg,
-                 text=(f"Only {ARROWS_PER_END} arrows allowed per end.\n"
-                       "Click “New End” to continue scoring."),
-                 font=("Helvetica", 10),
-                 bg=COLORS["bg"], fg=COLORS["text"],
-                 justify="center").pack(padx=28, pady=(0, 14))
+        tk.Label(
+            dlg,
+            text="End Full",
+            font=("Helvetica", 14, "bold"),
+            bg=COLORS["bg"],
+            fg=COLORS["highlight"],
+        ).pack(padx=28, pady=(18, 4))
+        tk.Label(
+            dlg,
+            text=(
+                f"Only {ARROWS_PER_END} arrows allowed per end.\n"
+                "Click “New End” to continue scoring."
+            ),
+            font=("Helvetica", 10),
+            bg=COLORS["bg"],
+            fg=COLORS["text"],
+            justify="center",
+        ).pack(padx=28, pady=(0, 14))
 
-        self._btn(dlg, "OK", dlg.destroy,
-                  bg=COLORS["highlight"], fg="white").pack(pady=(0, 16))
+        self._btn(dlg, "OK", dlg.destroy, bg=COLORS["highlight"], fg="white").pack(
+            pady=(0, 16)
+        )
 
         dlg.bind("<Return>", lambda e: dlg.destroy())
         dlg.bind("<Escape>", lambda e: dlg.destroy())
@@ -1243,10 +1498,20 @@ class ArcheryTracker:
         hdr = tk.Frame(self.root, bg=COLORS["panel"], height=56)
         hdr.pack(fill="x")
         hdr.pack_propagate(False)
-        self._btn(hdr, "\u2190 Back", self.show_main_menu,
-                  bg=COLORS["panel"], fg=COLORS["subtext"]).pack(side="left", padx=10, pady=8)
-        tk.Label(hdr, text="Statistics", font=("Helvetica", 17, "bold"),
-                 bg=COLORS["panel"], fg=COLORS["highlight"]).pack(side="left", padx=6)
+        self._btn(
+            hdr,
+            "\u2190 Back",
+            self.show_main_menu,
+            bg=COLORS["panel"],
+            fg=COLORS["subtext"],
+        ).pack(side="left", padx=10, pady=8)
+        tk.Label(
+            hdr,
+            text="Statistics",
+            font=("Helvetica", 17, "bold"),
+            bg=COLORS["panel"],
+            fg=COLORS["highlight"],
+        ).pack(side="left", padx=6)
 
         content = tk.Frame(self.root, bg=COLORS["bg"])
         content.pack(fill="both", expand=True, padx=28, pady=18)
@@ -1258,21 +1523,36 @@ class ArcheryTracker:
         tiles = tk.Frame(content, bg=COLORS["bg"])
         tiles.pack(fill="x", pady=(0, 18))
         for val, label in [
-            (gstats["total_sessions"],                     "Sessions"),
-            (gstats["total_arrows"],                       "Total Arrows"),
-            (gstats.get("global_best_session", 0),         "Best Session"),
-            (f"{gstats['overall_average']:.2f}",           "Avg / Arrow"),
+            (gstats["total_sessions"], "Sessions"),
+            (gstats["total_arrows"], "Total Arrows"),
+            (gstats.get("global_best_session", 0), "Best Session"),
+            (f"{gstats['overall_average']:.2f}", "Avg / Arrow"),
         ]:
             t = tk.Frame(tiles, bg=COLORS["accent"])
             t.pack(side="left", expand=True, fill="both", padx=5, pady=4)
-            tk.Label(t, text=str(val), font=("Helvetica", 26, "bold"),
-                     bg=COLORS["accent"], fg=COLORS["highlight"]).pack(pady=(10, 2))
-            tk.Label(t, text=label, font=("Helvetica", 9),
-                     bg=COLORS["accent"], fg=COLORS["subtext"]).pack(pady=(0, 10))
+            tk.Label(
+                t,
+                text=str(val),
+                font=("Helvetica", 26, "bold"),
+                bg=COLORS["accent"],
+                fg=COLORS["highlight"],
+            ).pack(pady=(10, 2))
+            tk.Label(
+                t,
+                text=label,
+                font=("Helvetica", 9),
+                bg=COLORS["accent"],
+                fg=COLORS["subtext"],
+            ).pack(pady=(0, 10))
 
         # Score distribution bar chart
-        tk.Label(content, text="Score Distribution", font=("Helvetica", 11, "bold"),
-                 bg=COLORS["bg"], fg=COLORS["subtext"]).pack(anchor="w", pady=(4, 4))
+        tk.Label(
+            content,
+            text="Score Distribution",
+            font=("Helvetica", 11, "bold"),
+            bg=COLORS["bg"],
+            fg=COLORS["subtext"],
+        ).pack(anchor="w", pady=(4, 4))
 
         dist_frame = tk.Frame(content, bg=COLORS["panel"])
         dist_frame.pack(fill="x", pady=(0, 18))
@@ -1292,9 +1572,15 @@ class ArcheryTracker:
             row = tk.Frame(dist_frame, bg=COLORS["panel"])
             row.pack(fill="x", padx=10, pady=2)
 
-            tk.Label(row, text=f"{ring:2d}", font=("Courier", 10, "bold"),
-                     bg=COLORS["panel"], fg=RING_COLORS[ring - 1],
-                     width=3, anchor="e").pack(side="left")
+            tk.Label(
+                row,
+                text=f"{ring:2d}",
+                font=("Courier", 10, "bold"),
+                bg=COLORS["panel"],
+                fg=RING_COLORS[ring - 1],
+                width=3,
+                anchor="e",
+            ).pack(side="left")
 
             bar_host = tk.Frame(row, bg=COLORS["bg"], height=16)
             bar_host.pack(side="left", fill="x", expand=True, padx=6)
@@ -1304,24 +1590,41 @@ class ArcheryTracker:
                 bar = tk.Frame(bar_host, bg=RING_COLORS[ring - 1], height=16)
                 bar.place(relx=0, rely=0, relwidth=w_ratio, relheight=1)
 
-            tk.Label(row, text=f"{count:4d}", font=("Courier", 10),
-                     bg=COLORS["panel"], fg=COLORS["subtext"]).pack(side="left")
+            tk.Label(
+                row,
+                text=f"{count:4d}",
+                font=("Courier", 10),
+                bg=COLORS["panel"],
+                fg=COLORS["subtext"],
+            ).pack(side="left")
 
         # Session table
-        tk.Label(content, text="All Sessions", font=("Helvetica", 11, "bold"),
-                 bg=COLORS["bg"], fg=COLORS["subtext"]).pack(anchor="w", pady=(4, 4))
+        tk.Label(
+            content,
+            text="All Sessions",
+            font=("Helvetica", 11, "bold"),
+            bg=COLORS["bg"],
+            fg=COLORS["subtext"],
+        ).pack(anchor="w", pady=(4, 4))
 
         tbl_frame = tk.Frame(content, bg=COLORS["panel"])
         tbl_frame.pack(fill="both", expand=True)
 
         style = ttk.Style()
         style.theme_use("clam")
-        style.configure("Treeview",
-                        background=COLORS["panel"], foreground=COLORS["text"],
-                        fieldbackground=COLORS["panel"], rowheight=24)
-        style.configure("Treeview.Heading",
-                        background=COLORS["accent"], foreground=COLORS["text"],
-                        font=("Helvetica", 10, "bold"))
+        style.configure(
+            "Treeview",
+            background=COLORS["panel"],
+            foreground=COLORS["text"],
+            fieldbackground=COLORS["panel"],
+            rowheight=24,
+        )
+        style.configure(
+            "Treeview.Heading",
+            background=COLORS["accent"],
+            foreground=COLORS["text"],
+            font=("Helvetica", 10, "bold"),
+        )
         style.map("Treeview", background=[("selected", COLORS["highlight"])])
 
         cols = ("Name", "Date", "Distance", "Equipment", "Arrows", "Score", "Avg")
@@ -1336,15 +1639,19 @@ class ArcheryTracker:
             arrow_count = stats.get("arrow_count", 0)
             total_score = stats.get("total_score", 0)
             avg = stats.get("average_arrow", 0.0)
-            tree.insert("", "end", values=(
-                sess.get("name", "?"),
-                sess.get("date", "?"),
-                sess.get("distance", ""),
-                sess.get("equipment_notes", ""),
-                arrow_count,
-                total_score,
-                f"{avg:.2f}",
-            ))
+            tree.insert(
+                "",
+                "end",
+                values=(
+                    sess.get("name", "?"),
+                    sess.get("date", "?"),
+                    sess.get("distance", ""),
+                    sess.get("equipment_notes", ""),
+                    arrow_count,
+                    total_score,
+                    f"{avg:.2f}",
+                ),
+            )
 
         sb = ttk.Scrollbar(tbl_frame, orient="vertical", command=tree.yview)
         tree.configure(yscrollcommand=sb.set)
@@ -1428,8 +1735,10 @@ class SmartArcheryUI:
 
     def displayScoringInterface(self):
         """Scoring loop — user enters arrow scores end by end."""
-        print(f"\n  Enter up to {ARROWS_PER_END} arrow scores per end "
-              "(space-separated, 0-10 or X).")
+        print(
+            f"\n  Enter up to {ARROWS_PER_END} arrow scores per end "
+            "(space-separated, 0-10 or X)."
+        )
         print("  Type 'done' when finished, 'undo' to remove last end.\n")
 
         end_num = 1
