@@ -1,4 +1,18 @@
-Session_ID,Date,Distance,Target_Face,Weather,Equipment_Notes,End_Number,Arrow_1,End_Total
-0,2026-01-01,18m,40cm,Indoor,N/A,1,9,9
-0,2026-01-01,18m,40cm,Indoor,N/A,2,9,9
-0,2026-01-01,18m,40cm,Indoor,N/A,3,X,10
+Session_ID,Date,Distance,Target_Face,Weather,Equipment_Notes,End_Number,Arrow_1,Arrow_2,Arrow_3,Arrow_4,Arrow_5,Arrow_6,Arrow_7,Arrow_8,End_Total
+0,2026-01-01,18m,40cm,Indoor,N/A,1,9,,,,,,,,9
+0,2026-01-01,18m,40cm,Indoor,N/A,2,9,,,,,,,,9
+0,2026-01-01,18m,40cm,Indoor,N/A,3,X,,,,,,,,10
+1,2026-03-20 18:40,N/A,N/A,N/A,N/A,1,6,7,10,8,7,7,5,4,54
+3,2026-03-20 18:46,N/A,Compound (6-ring),N/A,N/A,1,10,10,,,,,,,20
+8,2026-04-29 12:22,20m,Compound (Inner 10),Indoor,N/A,1,10,10,9,,,,,,29
+8,2026-04-29 12:22,20m,Compound (Inner 10),Indoor,N/A,2,9,8,8,,,,,,25
+9,2026-04-29 12:28,N/A,Compound (Inner 10),N/A,N/A,1,10,10,10,,,,,,30
+10,2026-04-29 12:41,20m,Compound (Inner 10),Indoor,N/A,1,10,10,10,,,,,,30
+10,2026-04-29 12:41,20m,Compound (Inner 10),Indoor,N/A,2,10,9,9,,,,,,28
+10,2026-04-29 12:41,20m,Compound (Inner 10),Indoor,N/A,3,9,9,10,,,,,,28
+10,2026-04-29 12:41,20m,Compound (Inner 10),Indoor,N/A,4,0,0,10,,,,,,10
+10,2026-04-29 12:41,20m,Compound (Inner 10),Indoor,N/A,5,0,0,10,,,,,,10
+11,2026-04-29 12:53,N/A,Recurve (Full),N/A,N/A,1,10,10,10,,,,,,30
+12,2026-04-29 12:58,20m,Recurve (Full),Indoor,Broken bow,1,10,0,0,,,,,,10
+12,2026-04-29 12:58,20m,Recurve (Full),Indoor,Broken bow,2,9,9,9,,,,,,27
+12,2026-04-29 12:58,20m,Recurve (Full),Indoor,Broken bow,3,10,9,10,,,,,,29
